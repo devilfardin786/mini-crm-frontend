@@ -11,6 +11,7 @@ import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 
+/** Define TypeScript Schema for FormData */
 const ruleSchema = z.object({
   field: z.string(),
   operator: z.string(),
@@ -23,23 +24,30 @@ const campaignSchema = z.object({
   message: z.string().min(5),
 });
 
+/** Define TypeScript Type */
+type CampaignFormData = z.infer<typeof campaignSchema>;
+
 export default function NewCampaign() {
-  const { register, handleSubmit, control } = useForm({
+  const { register, handleSubmit, control } = useForm<CampaignFormData>({
     resolver: zodResolver(campaignSchema),
   });
 
-  const [rules, setRules] = useState([{ field: "", operator: "", value: "" }]);
+  /** Define useState with correct type */
+  const [rules, setRules] = useState<{ field: string; operator: string; value: string }[]>([
+    { field: "", operator: "", value: "" },
+  ]);
 
   const addRule = () => {
     setRules([...rules, { field: "", operator: "", value: "" }]);
   };
 
-  const onSubmit = async (data: any) => {
+  /** Fix TypeScript Error: Specify correct type for `onSubmit` */
+  const onSubmit = async (data: CampaignFormData) => {
     try {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, data);
-      alert("Campaign created successfully!");
+      alert("🎉 Campaign created successfully!");
     } catch (error) {
-      console.error(error);
+      console.error("❌ Failed to create campaign:", error);
       alert("Failed to create campaign.");
     }
   };
@@ -81,9 +89,13 @@ export default function NewCampaign() {
             <Input {...register(`rules.${index}.value`)} placeholder="Value" />
           </div>
         ))}
-        <Button type="button" onClick={addRule}>Add Rule</Button>
+        <Button type="button" onClick={addRule}>
+          ➕ Add Rule
+        </Button>
 
-        <Button type="submit" className="mt-4">Create Campaign</Button>
+        <Button type="submit" className="mt-4">
+          🚀 Create Campaign
+        </Button>
       </form>
     </Card>
   );
