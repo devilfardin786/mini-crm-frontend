@@ -4,8 +4,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
 
+/** Define TypeScript Interface for Campaigns */
+type Campaign = {
+  _id: string;
+  name: string;
+  sent: number;
+  failed: number;
+};
+
 export default function Dashboard() {
-  const [campaigns, setCampaigns] = useState([]);
+  /** Fix TypeScript error by specifying correct type */
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/campaigns`)
