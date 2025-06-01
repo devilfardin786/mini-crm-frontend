@@ -2,10 +2,17 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Table } from "@/components/ui";
-
+import { Table } from "@/components/ui/table";
+import { Card } from "@/components/ui/card";
 export default function CampaignHistory() {
-  const [campaigns, setCampaigns] = useState([]);
+  type Campaign = {
+  _id: string;
+  name: string;
+  message: string;
+  createdAt: string;
+};
+
+const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
   useEffect(() => {
     const fetchCampaigns = async () => {
