@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
+import RuleBuilder from "@/components/RuleBuilder";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 
-/** Define TypeScript Schema for FormData */
+/** Schema Definitions */
 const ruleSchema = z.object({
   field: z.string(),
   operator: z.string(),
@@ -20,31 +21,58 @@ const ruleSchema = z.object({
 
 const campaignSchema = z.object({
   name: z.string().min(3),
-  rules: z.array(ruleSchema),
   message: z.string().min(5),
+  rules: z.array(ruleSchema),
+  logic: z.enum(["AND", "OR"]),
 });
 
-/** Define TypeScript Type */
 type CampaignFormData = z.infer<typeof campaignSchema>;
 
 export default function NewCampaign() {
-  const { register, handleSubmit, control } = useForm<CampaignFormData>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm<CampaignFormData>({
     resolver: zodResolver(campaignSchema),
+    defaultValues: {
+      name: "",
+      message: "",
+      rules: [],
+      logic: "AND",
+    },
   });
 
-  /** Define useState with correct type */
-  const [rules, setRules] = useState<{ field: string; operator: string; value: string }[]>([
-    { field: "", operator: "", value: "" },
-  ]);
+  const [audienceSize, setAudienceSize] = useState<number | null>(null);
 
-  const addRule = () => {
-    setRules([...rules, { field: "", operator: "", value: "" }]);
+  /** Handle Rules Change */
+  const handleRulesChange = (newRules: any, logic: "AND" | "OR") => {
+    setValue("rules", newRules);
+    setValue("logic", logic);
   };
 
-  /** Fix TypeScript Error: Specify correct type for `onSubmit` */
+  /** Preview Audience */
+  const previewAudience = async () => {
+    try {
+      const { rules, logic } = getValues();
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/audience-size`, {
+
+        rules: rules.map((r) => `${r.field} ${r.operator} ${r.value}`),
+        logic,
+      });
+      setAudienceSize(response.data.size);
+    } catch (error) {
+      console.error("❌ Audience preview failed:", error);
+      alert("Failed to preview audience.");
+    }
+  };
+
+  /** Submit Campaign */
   const onSubmit = async (data: CampaignFormData) => {
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, data);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/campaigns`, data);
       alert("🎉 Campaign created successfully!");
     } catch (error) {
       console.error("❌ Failed to create campaign:", error);
@@ -54,44 +82,31 @@ export default function NewCampaign() {
 
   return (
     <Card className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Create New Campaign</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Label>Name</Label>
-        <Input {...register("name")} placeholder="Enter campaign name" />
+      <h1 className="text-2xl font-bold mb-4">📣 Create New Campaign</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <Label>Name</Label>
+          <Input {...register("name")} placeholder="Enter campaign name" />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+        </div>
 
-        <Label>Message</Label>
-        <Input {...register("message")} placeholder="Enter campaign message" />
+        <div>
+          <Label>Message</Label>
+          <Input {...register("message")} placeholder="Enter campaign message" />
+          {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
+        </div>
 
-        <Label>Rules</Label>
-        {rules.map((rule, index) => (
-          <div key={index} className="flex space-x-2">
-            <Controller
-              name={`rules.${index}.field`}
-              control={control}
-              render={({ field }) => (
-                <Select {...field}>
-                  <option value="spend">Spend</option>
-                  <option value="visits">Visits</option>
-                  <option value="inactive">Inactive Days</option>
-                </Select>
-              )}
-            />
-            <Controller
-              name={`rules.${index}.operator`}
-              control={control}
-              render={({ field }) => (
-                <Select {...field}>
-                  <option value=">">Greater Than</option>
-                  <option value="<">Less Than</option>
-                </Select>
-              )}
-            />
-            <Input {...register(`rules.${index}.value`)} placeholder="Value" />
-          </div>
-        ))}
-        <Button type="button" onClick={addRule}>
-          ➕ Add Rule
+        <RuleBuilder onRulesChange={handleRulesChange} />
+
+        <Button type="button" onClick={previewAudience} className="mt-2">
+          👥 Preview Audience Size
         </Button>
+
+        {audienceSize !== null && (
+          <div className="mt-2 text-lg">
+            👥 Estimated Audience Size: <strong>{audienceSize}</strong>
+          </div>
+        )}
 
         <Button type="submit" className="mt-4">
           🚀 Create Campaign
