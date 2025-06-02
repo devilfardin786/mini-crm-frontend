@@ -13,6 +13,116 @@ pnpm dev
 # or
 bun dev
 ```
+# 🏆 Mini CRM - Assignment Submission  
+
+## 📌 Project Overview  
+Mini CRM is a lightweight **customer relationship management system** that allows businesses to create targeted campaigns, track campaign performance, and automate outreach using AI-powered scheduling.  
+
+## 🎯 Features  
+✅ **Campaign Creation with Audience Segmentation**  
+✅ **AI-based Smart Scheduling**  
+✅ **Google Authentication**  
+✅ **Real-time Campaign Delivery Logging**  
+✅ **Vendor API Simulation for Message Delivery**  
+
+---
+
+## 🚀 Local Setup Instructions  
+
+### **🖥 Prerequisites**  
+1️⃣ Install [Node.js](https://nodejs.org/) (Latest LTS version)  
+2️⃣ Install [MongoDB Atlas](https://www.mongodb.com/) or use a local MongoDB server  
+3️⃣ Install [Git](https://git-scm.com/)  
+
+### **📂 Clone the Repository**  
+```bash
+git clone https://github.com/yourusername/mini-crm.git
+cd mini-crm
+
+🔧 Backend Setup
+cd backend
+npm install
+
+
+✍ Create .env file in backend/
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=mongodb+srv://mini_crm_user:minicrm1234@cluster0.mongodb.net
+JWT_SECRET=your-super-secret-jwt-key
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+OPENAI_API_KEY=your-openai-api-key
+BASE_URL=http://localhost:5000
+FRONTEND_URL=http://localhost:3000
+
+
+✔ Start the backend server:
+npm start
+
+
+🚀 Backend is now running at: http://localhost:5000
+
+🖥 Frontend Setup
+cd frontend
+npm install
+
+
+✍ Create .env.local file in frontend/
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret-key
+NEXT_PUBLIC_GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+
+✔ Start the frontend app:
+npm run dev
+
+
+🚀 Frontend is now running at: http://localhost:3000
+
+📊 Architecture Diagram
+Mini CRM Architecture (Insert actual image URL if hosted online)
+                         ┌──────────────────────────┐
+                          │        FRONTEND (Vercel) │
+                          │ Next.js (React)          │
+                          └─────────┬───────────────┘
+                                    │
+                                    ▼
+                          ┌──────────────────────────┐
+                          │     BACKEND (Render)     │
+                          │ Node.js, Express, MongoDB│
+                          └─────────┬───────────────┘
+                                    │
+                                    ▼
+                          ┌──────────────────────────┐
+                          │  Database (MongoDB Atlas)│
+                          │ Campaigns, Logs, Users   │
+                          └──────────────────────────┘
+
+
+✔ Frontend calls backend APIs (/api/campaigns, /api/auth/google)
+✔ Backend processes campaign logic & authentication
+✔ MongoDB stores campaign data & logs
+
+🤖 AI Tools & Technologies Used
+🔹 OpenAI API → AI-powered campaign scheduling
+🔹 Google OAuth → Secure login with Google
+🔹 Next.js (React) → Modern frontend framework
+🔹 MongoDB Atlas → Cloud database for storing users & campaigns
+🔹 Express.js → Backend framework for API handling
+
+⚠️ Known Limitations & Assumptions
+🚨 Limitations:
+- No real email/SMS integration → Vendor API is simulated
+- Authentication only via Google → No manual account creation
+- Basic AI scheduling logic → Can be enhanced with real-time AI optimization
+🚧 Assumptions:
+- Users are defined in the database before creating campaigns
+- Campaigns are limited to basic targeting (Spend, Visits, Inactive Days)
+
+🎉 Mini CRM is now fully set up! 🚀
+✔ Follow the above steps to deploy it on Render & Vercel!
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
