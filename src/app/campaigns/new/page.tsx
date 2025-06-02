@@ -48,10 +48,14 @@ export default function NewCampaign() {
   const [audienceSize, setAudienceSize] = useState<number | null>(null);
 
   /** Handle Rules Change */
-  const handleRulesChange = (newRules: any, logic: "AND" | "OR") => {
-    setValue("rules", newRules);
-    setValue("logic", logic);
-  };
+  const handleRulesChange = (
+  newRules: { field: string; operator: string; value: string }[],
+  logic: "AND" | "OR"
+) => {
+  setValue("rules", newRules);
+  setValue("logic", logic);
+};
+
 
   /** Preview Audience */
   const previewAudience = async () => {
